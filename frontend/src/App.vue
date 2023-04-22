@@ -27,9 +27,10 @@ export default {
   methods: {
     signOut() {
       // do the signout method here.
+      console.log("signout initiated");
       $http
         .delete(
-          `/sessions/`,
+          `/sessions`,
           {
             sessionId: this.sessionId,
           },
@@ -38,9 +39,11 @@ export default {
         .then(() => {
           localStorage.removeItem("sessionId");
           this.$store.commit("clearSessionId");
+          console.log("signed out");
         })
         .catch((response) => {
-          alert(response.body.message);
+          console.log(response);
+          alert(response.body);
         });
     },
   },

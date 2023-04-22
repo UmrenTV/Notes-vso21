@@ -55,10 +55,9 @@ router.post(
 
 router.delete(
   "/",
-  authorizeRequest,
   handleErrors(async (req: Request, res: Response) => {
     // Delete the session
-    await prisma.session.delete({ where: { id: req.session.id } });
+    await prisma.session.delete({ where: { id: Number(req.body.sessionId) } });
 
     // Return a 204 No Content response
     return res.status(204).send();
