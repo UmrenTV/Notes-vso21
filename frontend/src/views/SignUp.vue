@@ -13,6 +13,7 @@ export default {
   methods: {
     signUp() {
       // Send a POST request to the backend
+      console.log("signup sent", this.signUpEmail, this.signUpPassword);
       $http
         .post("/users", {
           email: this.signUpEmail,
@@ -61,12 +62,19 @@ export default {
         <label class="label">
           <span class="label-text">Email</span>
         </label>
-        <input
+        <!-- <input
           type="text"
           name="email"
           placeholder="Type here"
           class="input input-bordered w-full max-w-xs"
           v-on:keyup="checkEmail"
+          v-model="signUpEmail"
+        /> -->
+        <input
+          type="text"
+          name="email"
+          placeholder="Type here"
+          class="input input-bordered w-full max-w-xs"
           v-model="signUpEmail"
         />
         <label class="label">

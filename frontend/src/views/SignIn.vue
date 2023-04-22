@@ -1,6 +1,7 @@
 <!-- src/views/SignIn.vue -->
 <script>
 import { $http } from "../utils/http";
+import bcrypt from "bcryptjs";
 
 export default {
   data() {
@@ -11,10 +12,30 @@ export default {
     };
   },
   methods: {
-    signIn() {
+    async signIn() {
+      // Hash the password using bcrypt
+
+      // const salt = await bcrypt.genSalt(10);
+      // const hashedPassword = await bcrypt.hash(this.signInPassword, salt);
+
       // Send request to the backend
-      $http;
-      // code here
+      $http
+        .post(
+          "/sessions",
+          {
+            email: this.signInEmail,
+            password: this.signInPassword,
+          },
+          { disableErrorHandling: true }
+        )
+        .then((response) => {
+          console.log("Logged in with session ID: ", response.sessionId);
+          localStorage.setItem("sessionId", response.sessionId);
+          this.$router.push("/");
+        })
+        .catch((response) => {
+          alert(response.body.message);
+        });
     },
     checkEmail() {
       // If the email is empty, don't send a request
@@ -53,12 +74,19 @@ export default {
         <label class="label">
           <span class="label-text">Email</span>
         </label>
-        <input
+        <!-- <input
           type="text"
           name="email"
           placeholder="Type here"
           class="input input-bordered w-full max-w-xs"
           v-on:keyup="checkEmail"
+          v-model="signInEmail"
+        /> -->
+        <input
+          type="text"
+          name="email"
+          placeholder="Type here"
+          class="input input-bordered w-full max-w-xs"
           v-model="signInEmail"
         />
         <label class="label">
