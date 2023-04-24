@@ -66,9 +66,6 @@ paths:
     description: The REST endpoint/path used to `Session` entity for each login.  This
       path contains a `POST` and `DELETE` to create a `Session` or delete existing
       one.
-    servers:
-    - url: http://localhost:3000/
-      description: ""
     post:
       requestBody:
         description: A new `Session` to be created.
@@ -158,6 +155,8 @@ paths:
                   value: "{\"error\": \"User not found\""
           description: "Not found. (when the userId sent in the session object, doesn't\
             \ match to any user.id in the database.)"
+      security:
+      - Authorization: []
       operationId: deleteLoginSession
       summary: Logout
       description: Deletes an existing `Session`for existing `User`.
@@ -208,6 +207,11 @@ components:
           type: string
       example:
         sessionId: "60"
+  securitySchemes:
+    Authorization:
+      scheme: bearer
+      type: http
+      description: Bearer sessionId
 tags:
 - name: /users
   description: ""
