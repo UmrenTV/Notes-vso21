@@ -1,3 +1,4 @@
+---
 openapi: 3.0.2
 info:
   title: notes-vso21
@@ -5,35 +6,33 @@ info:
 paths:
   /users:
     summary: Path used to manage the list of users.
-    description: >-
-      The REST endpoint/path used to list and create zero or more `User` entities.  This path contains a
-      `GET` and `POST` operation to perform the list and create tasks, respectively.
+    description: "The REST endpoint/path used to list and create zero or more `User` entities.  This path contains a `GET` and `POST` operation to perform the list and create tasks, respectively."
     post:
       requestBody:
         description: A new `User` to be created.
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Credentials'
+              $ref: "#/components/schemas/Credentials"
         required: true
       tags:
         - /users
       responses:
-        '201':
+        "201":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
           description: Successful response.
-        '400':
+        "400":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               examples:
                 Email is required:
-                  value: |-
-                    
+                  value: |2-
+
                     {
                         "error": "Email is required"
                     }
@@ -47,11 +46,11 @@ paths:
                   value:
                     error: Password must be at least 8 characters long
           description: Bad Request
-        '409':
+        "409":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
               examples:
                 Email already exists:
                   value:
@@ -60,24 +59,116 @@ paths:
       operationId: createUser
       summary: Create a User
       description: Creates a new instance of a `User`.
+  /sessions:
+    summary: Path used to manage the login sessions.
+    description: "The REST endpoint/path used to `Session` entity for each login. This path contains a `POST` and `DELETE` to create a `Session` or delete existing one."
+    post:
+      requestBody:
+        description: A new `Session` to be created.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Credentials"
+        required: true
+      tags:
+        - /sessions
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Session"
+              examples:
+                sessionId:
+                  value:
+                    sessionId: "70"
+          description: Successfully logged in.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                That user desn't exist.:
+                  value:
+                    error: That user desn't exist.
+                Wrong Password.:
+                  value:
+                    error: Wrong Password.
+          description: Unauthorized.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                Email is required:
+                  value:
+                    error: Email is required.
+                Password is required:
+                  value:
+                    error: Password is required
+          description: Bad Request.
+      operationId: createLoginSession
+      summary: Login
+      description: Creates a new `Session`for existing `User`.
+    delete:
+      tags:
+        - /sessions
+      responses:
+        "204":
+          description: Session successfully deleted.
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                Session not found:
+                  value:
+                    error: Session not found
+          description: Unauthorized.
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                Invalid authorization header format.:
+                  value:
+                    error: Invalid authorization header format.
+                Missing authorization header:
+                  value:
+                    error: Missing authorization header
+          description: Bad Request.
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                User not found:
+                  value: '{"error": "User not found"'
+          description: "Not found. (when the userId sent in the session object, doesn't match to any user.id in the database.)"
+      security:
+        - Authorization: []
+      operationId: deleteLoginSession
+      summary: Logout
+      description: Deletes an existing `Session`for existing `User`.
 components:
   schemas:
-    User:
-      title: Root Type for User
-      description: ''
+    Error:
+      title: Root Type for Error
+      description: ""
       type: object
       properties:
-        email:
+        error:
           type: string
-        id:
-          format: int32
-          type: integer
       example:
-        email: asd6@asd.ee
-        id: 14
+        error: Email is required
     Credentials:
       title: Root Type for Credentials
-      description: ''
+      description: ""
       type: object
       properties:
         email:
@@ -86,17 +177,35 @@ components:
           format: date
           type: string
       example:
-        email: asd6@asd.ee
-        password: '11111111'
-    Error:
-      title: Root Type for Error
-      description: ''
+        email: email@email.com
+        password: "123456789"
+    User:
+      title: Root Type for User
+      description: ""
       type: object
       properties:
-        error:
+        email:
+          type: string
+        id:
+          format: int32
+          type: integer
+      example:
+        email: email@email.com
+        id: 14
+    Session:
+      title: Root Type for Session
+      description: "This data type is created whenever already existing user is logged in through the /sessions path/route."
+      type: object
+      properties:
+        sessionId:
           type: string
       example:
-        error: Email is required
+        sessionId: "60"
+  securitySchemes:
+    Authorization:
+      scheme: bearer
+      type: http
+      description: Bearer sessionId
 tags:
   - name: /users
-    description: ''
+    description: ""
