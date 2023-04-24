@@ -1,20 +1,11 @@
 import express, { NextFunction, Request, Response } from "express";
 import { handleErrors } from "./handleErrors";
 import { PrismaClient } from "@prisma/client";
+import { AuthenticatedRequest } from "../types";
 import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 const router = express.Router();
-
-interface AuthenticatedRequest extends Request {
-  session: {
-    userId: string;
-  };
-  user: {
-    id: string;
-    email: string;
-  };
-}
 
 // Routes
 router.post(
@@ -55,9 +46,13 @@ router.post(
 
 router.delete(
   "/",
+  authorizeRequest,
   handleErrors(async (req: Request, res: Response) => {
+    const sessionIdFromHeader = req.headers.authorization?.split(" ")[1];
+    console.log(sessionIdFromHeader);
+
     // Delete the session
-    await prisma.session.delete({ where: { id: Number(req.body.sessionId) } });
+    await prisma.session.delete({ where: { id: Number(sessionIdFromHeader) } });
 
     // Return a 204 No Content response
     return res.status(204).send();

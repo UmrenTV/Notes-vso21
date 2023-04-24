@@ -31,6 +31,7 @@ export default {
         .then((response) => {
           console.log("Logged in with session ID: ", response.sessionId);
           localStorage.setItem("sessionId", response.sessionId);
+          this.$store.commit("setSessionId", response.sessionId);
           this.$router.push("/");
         })
         .catch((response) => {
